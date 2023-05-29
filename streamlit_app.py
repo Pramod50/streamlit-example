@@ -1,38 +1,75 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
+import yfinance as yf
 import streamlit as st
+from PIL import Image
+from urllib.request import urlopen
 
-"""
-# Welcome to Streamlit!
-
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
-
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
-
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+# Titles and subtitles
+st.title("Cryptocurrency Daily Prices | ₿")
+st.header("Main Dashboard")
+st.subheader("you can add more crypto in code </>")
 
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+# Defining ticker variables
+Bitcoin = 'BTC-USD'
+Ethereum = 'ETH-USD'
+Ripple = 'XRP-USD'
+BitcoinCash = "BCH-USD"
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+# Access data from Yahoo Finance
+BTC_Data = yf.Ticker(Bitcoin)
+ETH_Data = yf.Ticker(Ethereum)
+XRP_Data = yf.Ticker(Ripple)
+BCH_Data = yf.Ticker(BitcoinCash)
 
-    points_per_turn = total_points / num_turns
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
+#Fetch history data from Yahoo Finance
+BTCHis = BTC_Data.history(period="max")
+ETHHis = ETH_Data.history(period="max")
+XRPHis = XRP_Data.history(period="max")
+BCHHis = BCH_Data.history(period="max")
 
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+# Fetch crypto data for the dataframe
+BTC = yf.download(Bitcoin, start="2021-11-19", end="2021-11-19")
+ETH = yf.download(Ethereum, start="2021-11-19", end="2021-11-19")
+XRP = yf.download(Ripple, start="2021-11-19", end="2021-11-19")
+BCH = yf.download(BitcoinCash, start="2021-11-19", end="2021-11-19")
+
+#Bitcoin
+st.write("BITCOIN ($)")
+imageBTC = Image.open(urlopen('https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'))
+#Display image
+st.image(imageBTC)
+#Display dataframe
+st.table(BTC)
+#Display a chart
+st.bar_chart(BTCHis.Close)
+
+#Ethereum
+st.write("ETHERUM ($)")
+imageETH = Image.open(urlopen('https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'))
+#Display image
+st.image(imageETH)
+#Display dataframe
+st.table(ETH)
+#Display a chart
+st.bar_chart(ETHHis.Close)
+
+#Ripple
+st.write("RIPPLE ($)")
+imageXRP = Image.open(urlopen('https://s2.coinmarketcap.com/static/img/coins/64x64/52.png'))
+#Display image
+st.image(imageXRP)
+#Display dataframe
+st.table(XRP)
+#Display a chart
+st.bar_chart(XRPHis.Close)
+
+#Bitcoin Cash
+st.write("BITCOIN CASH ($)")
+imageBCH = Image.open(urlopen('https://s2.coinmarketcap.com/static/img/coins/64x64/1831.png'))
+#Display image
+st.image(imageBCH)
+#Display dataframe
+st.table(BCH)
+#Display a chart
+st.bar_chart(BCHHis.Close)
